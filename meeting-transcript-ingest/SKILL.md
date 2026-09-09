@@ -17,23 +17,22 @@ API instead of a file, use `extract-meeting-transcript` (MCP-based).
 
 ## When it fires
 
-A meeting ends, the provider drops an export into the watched folder
-(`JON_OS_MEETING_WATCH_DIR`, default `~/Downloads/meeting-transcripts`), and
-`scripts/automation/watch_meetings.py` runs this skill through
-`scripts/automation/ingest_pipeline.py`. Run it by hand for a one-off export.
+A meeting ends and the provider drops an export file somewhere on disk. Run
+this skill by hand on that file, or wire it into a folder watcher that calls
+the script below whenever a new export appears.
 
 ## Run it
 
 ```bash
-python3 scripts/ingest_meeting_transcript.py "EXPORT_FILE" --vault-root .
+python3 meeting-transcript-ingest/scripts/ingest_meeting_transcript.py "EXPORT_FILE" --vault-root .
 ```
 
-(Script lives in this skill's `scripts/` directory; paths above are relative to
-the vault root.) Accepted formats: `.vtt` / `.srt` caption files (Zoom),
+(`--vault-root` is the project or vault root; the note lands in its
+`meeting-raw-transcripts/` folder. Use `--out` to write somewhere else.) Accepted formats: `.vtt` / `.srt` caption files (Zoom),
 `.txt` / `.md` exports (Granola), and `.json` exports carrying a
 `transcript` / `segments` / `sentences` / `utterances` array.
 
-It writes `reference/meeting-raw-transcripts/YYYY-MM-DD title-slug.md` with
+It writes `meeting-raw-transcripts/YYYY-MM-DD title-slug.md` with
 frontmatter (`source`, `date`, `provider`, `participants`, `recording_url`,
 `type: meeting-transcript`) and prints a JSON summary including `written_to`.
 Provider, date, and title are inferred from the JSON metadata, then the
@@ -48,10 +47,10 @@ The transcript note is raw material, not a deliverable.
 
 - Leave the transcript body untouched — it is the provenance record.
 - If the meeting needs a summary, decisions, or follow-ups, write a *second*
-  note and wikilink it to the transcript (`[[YYYY-MM-DD title-slug]]`), the same
-  way `youtube-podcast-transcript-extraction` splits transcript from learnings.
-- Present candidate takeaways to Jon and wait for confirmation before writing
-  that second note. He is the editor of what enters the brain.
+  note and wikilink it to the transcript (`[[YYYY-MM-DD title-slug]]`), keeping
+  transcript and learnings separate.
+- Present candidate takeaways to the user and wait for confirmation before
+  writing that second note. They are the editor of what enters the vault.
 
 ## Quality checks
 
@@ -59,12 +58,12 @@ The transcript note is raw material, not a deliverable.
 - [ ] Speaker labels and timestamps preserved where the export had them.
 - [ ] Filename is `YYYY-MM-DD` + lower-case hyphenated title.
 - [ ] Frontmatter has `source`, `date`, and `provider`.
-- [ ] Note is in `reference/meeting-raw-transcripts/`.
+- [ ] Note is in `meeting-raw-transcripts/`.
 
 ## Common mistakes
 
-- Filing under a new meetings area — `reference/meeting-raw-transcripts/` already
+- Filing under a new meetings area — `meeting-raw-transcripts/` already
   exists and is the destination.
 - Cleaning up transcript wording. Garbled names stay; note them in the summary
   note instead.
-- Writing the summary note before Jon confirms the takeaways.
+- Writing the summary note before the user confirms the takeaways.

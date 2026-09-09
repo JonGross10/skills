@@ -2,14 +2,14 @@
 """Turn a meeting transcript export into a dated vault note.
 
 Usage:
-    python3 ingest_meeting_transcript.py EXPORT_FILE --vault-root /path/to/jon-os
+    python3 ingest_meeting_transcript.py EXPORT_FILE --vault-root /path/to/your/vault
     python3 ingest_meeting_transcript.py EXPORT_FILE --out /path/to/note.md
 
 Accepts what Granola and Zoom actually hand you: WebVTT/SRT caption files,
 plain text or markdown exports, and JSON exports carrying a transcript array.
 Speaker labels and timestamps are preserved as-is; nothing is summarized.
 
-Writes `reference/meeting-raw-transcripts/YYYY-MM-DD title-slug.md` with
+Writes `meeting-raw-transcripts/YYYY-MM-DD title-slug.md` with
 provenance frontmatter and prints a JSON summary to stdout.
 """
 
@@ -21,7 +21,7 @@ import sys
 from datetime import date as date_cls
 from pathlib import Path
 
-TRANSCRIPT_AREA = "reference/meeting-raw-transcripts"
+TRANSCRIPT_AREA = "meeting-raw-transcripts"
 CAPTION_INDEX_RE = re.compile(r"^\d+$")
 VTT_TIME_RE = re.compile(
     r"(?P<start>\d{1,2}:\d{2}:\d{2}[.,]\d{1,3}|\d{1,2}:\d{2}[.,]\d{1,3})\s*-->\s*\S+"

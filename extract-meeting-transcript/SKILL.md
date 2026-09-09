@@ -25,7 +25,7 @@ This is the MCP half of meeting capture. The file half is `meeting-transcript-in
 
 1. **Provider** — `Fireflies`, `Granola`, `Read.ai`, `Fathom`, or `Otter`. When a meeting was captured by more than one, Granola is the transcript of record and Read.ai is the backup (see the Read.ai specifics); do not merge two providers' text into one body.
 2. **Meeting identifier** — URL, meeting title, date, or internal ID. Ask if more than one meeting could match.
-3. **Destination folder** — `reference/meeting-raw-transcripts/`. Create the folder if it does not already exist.
+3. **Destination folder** — `meeting-raw-transcripts/`. Create the folder if it does not already exist.
 4. **Known context** — project, participants, or tags the user wants recorded.
 
 ## Procedure
@@ -48,7 +48,7 @@ This is the MCP half of meeting capture. The file half is `meeting-transcript-in
 `fireflies_get_transcript` returns structured data, not a text blob. The transcript text lives in the `sentences` array — each entry has a speaker name, start/end times, and the sentence text. Metadata such as `recording_url` sits alongside it.
 
 - Read the **entire** `sentences` array, in order, and reconstruct the transcript body from it. Every entry goes into the note; no sampling, no truncating to the first N sentences.
-- Format each sentence on its own line, matching the format already used in existing notes (see `reference/meeting-raw-transcripts/2026-08-25 jdg-sync-pearl.md`):
+- Format each sentence on its own line:
 
   ```
   [HH:MM - HH:MM] Speaker Name: sentence text
@@ -98,23 +98,19 @@ Fathom and Otter are only used when the user names them; they are not fallbacks 
 Every transcript gets an `area`, so the folder stays filterable in Obsidian instead of becoming an undifferentiated pile.
 
 - Infer it from the transcript subject matter — participants, the company or client discussed, the recurring topic.
-- `area` must be one of the transcript areas below. This vocabulary is meeting-specific and deliberately narrower than the `reference/` folder taxonomy in `AGENTS.md`. Do not invent a new area; if nothing fits, set `area: unfiled` and say so in the Step 6 report.
+- `area` must be one of the transcript areas listed in the table below. Fill the table in for your own setup before first use — a short, fixed vocabulary of the recurring kinds of meetings you have (a client engagement, a recurring team sync, research calls, a course). Do not invent a new area at run time; if nothing fits, set `area: unfiled` and say so in the Step 6 report.
 
   | `area` | covers |
   | --- | --- |
-  | `aci` | the client engagement and everything inside it, including acquisitions it absorbs |
-  | `ea-sync` | executive-assistant syncs, onboarding, and delegated workflow |
-  | `market-acquisition-research` | market, vendor, and acquisition-target research; outside networking calls |
-  | `personal-finance` | personal finance, tax, and career conversations |
-  | `ai` | AI course sessions and AI tooling |
-  | `content` | content production, brand, and events |
-- `project` is reserved for grouping meetings on the same recurring workstream *within* an area, but the project vocabulary is not settled yet: write `project: null` and leave the grouping to `area`. Do not invent slugs. Once the vocabulary is defined, it will be listed here.
-- A subsidiary workstream is not its own area — it belongs to the area that owns it (an acquisition the client absorbs is `area: aci`).
-- The classification is a label only: the note still lives in `reference/meeting-raw-transcripts/` regardless of `area`.
+  | `<area-slug>` | `<what kinds of meetings belong here>` |
+  | `<area-slug>` | `<what kinds of meetings belong here>` |
+- `project` is reserved for grouping meetings on the same recurring workstream *within* an area. Until you define a project vocabulary, write `project: null` and leave the grouping to `area`. Do not invent slugs.
+- A subsidiary workstream is not its own area — it belongs to the area that owns it.
+- The classification is a label only: the note still lives in `meeting-raw-transcripts/` regardless of `area`.
 - State the proposed `area` in the Step 6 report so the user can correct it in one line. Never block on confirmation — propose, save, and let the user override.
 
 ### Step 5: Write the note
-- Create `reference/meeting-raw-transcripts/` if it does not already exist.
+- Create `meeting-raw-transcripts/` if it does not already exist.
 - Save the file in that destination folder.
 - Begin with YAML frontmatter:
 
@@ -149,7 +145,7 @@ Every transcript gets an `area`, so the folder stays filterable in Obsidian inst
 
 ## Output
 
-A dated Markdown note in `reference/meeting-raw-transcripts/`, containing the full raw transcript and provenance frontmatter.
+A dated Markdown note in `meeting-raw-transcripts/`, containing the full raw transcript and provenance frontmatter.
 
 ## Quality checks
 
@@ -161,5 +157,5 @@ A dated Markdown note in `reference/meeting-raw-transcripts/`, containing the fu
 - [ ] No speaker attribution in the body that the source did not support; a Read.ai gap-fill span is labelled and its coverage stated.
 - [ ] Filename uses `YYYY-MM-DD` prefix and lower-case, hyphenated title.
 - [ ] Frontmatter includes `source`, `date`, `provider`, and `area`.
-- [ ] `area` is an existing `reference/` area (or `unfiled`), and the proposed classification was reported to the user.
-- [ ] `reference/meeting-raw-transcripts/` exists and the file is saved there.
+- [ ] `area` is one of the defined areas (or `unfiled`), and the proposed classification was reported to the user.
+- [ ] `meeting-raw-transcripts/` exists and the file is saved there.
