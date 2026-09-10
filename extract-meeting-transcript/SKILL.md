@@ -93,23 +93,7 @@ Fathom and Otter are only used when the user names them; they are not fallbacks 
 - Format: `YYYY-MM-DD <meeting-title>.md`.
 - Use lower-case, hyphenated words for the title portion, e.g. `2026-08-30 acme-q3-review.md`.
 
-### Step 4: Classify the meeting
-
-Every transcript gets an `area`, so the folder stays filterable in Obsidian instead of becoming an undifferentiated pile.
-
-- Infer it from the transcript subject matter — participants, the company or client discussed, the recurring topic.
-- `area` must be one of the transcript areas listed in the table below. Fill the table in for your own setup before first use — a short, fixed vocabulary of the recurring kinds of meetings you have (a client engagement, a recurring team sync, research calls, a course). Do not invent a new area at run time; if nothing fits, set `area: unfiled` and say so in the Step 6 report.
-
-  | `area` | covers |
-  | --- | --- |
-  | `<area-slug>` | `<what kinds of meetings belong here>` |
-  | `<area-slug>` | `<what kinds of meetings belong here>` |
-- `project` is reserved for grouping meetings on the same recurring workstream *within* an area. Until you define a project vocabulary, write `project: null` and leave the grouping to `area`. Do not invent slugs.
-- A subsidiary workstream is not its own area — it belongs to the area that owns it.
-- The classification is a label only: the note still lives in `meeting-raw-transcripts/` regardless of `area`.
-- State the proposed `area` in the Step 6 report so the user can correct it in one line. Never block on confirmation — propose, save, and let the user override.
-
-### Step 5: Write the note
+### Step 4: Write the note
 - Create `meeting-raw-transcripts/` if it does not already exist.
 - Save the file in that destination folder.
 - Begin with YAML frontmatter:
@@ -121,8 +105,6 @@ Every transcript gets an `area`, so the folder stays filterable in Obsidian inst
   provider: Fireflies|Granola|Read.ai|Fathom|Otter
   participants: [name, name, ...]
   recording_url: <url or null>
-  area: <one of the transcript areas above, or unfiled>
-  project: null
   transcript_status: none-at-source  # only when the provider returned no transcript
   ---
   ```
@@ -130,18 +112,18 @@ Every transcript gets an `area`, so the folder stays filterable in Obsidian inst
 - Add a source pointer line after the frontmatter, e.g. `Source: <provider> — <meeting-url-or-id>`.
 - Under the source pointer, paste the reconstructed transcript body — for Fireflies, the sentence lines built from the `sentences` array; for Granola, Read.ai, Fathom, and Otter, the turn-per-line text. Do not edit the transcript text itself.
 - When Read.ai gap-fills a Granola transcript, add a line under the source pointer naming both sources and the span each covers, and keep the Read.ai span as its own labelled section.
-- If the provider genuinely has no transcript for the meeting (Fireflies returns no sentences at all, Granola or Read.ai has no record), do not invent one: save the metadata, add `transcript_status: none-at-source` to the frontmatter, and say so in the Step 6 report.
+- If the provider genuinely has no transcript for the meeting (Fireflies returns no sentences at all, Granola or Read.ai has no record), do not invent one: save the metadata, add `transcript_status: none-at-source` to the frontmatter, and say so in the Step 5 report.
 - A note whose body is only the source pointer, the `recording_url`, or the metadata block is **invalid**. The frontmatter and the URL are provenance; the body must contain the transcript. If the body would be empty, stop and report the failure instead of saving a URL-only note.
 - Add wikilinks to relevant project or person notes only if the user has explicitly named them.
 
-### Step 6: Verify
+### Step 5: Verify
 - Confirm the file exists and is not empty or truncated.
 - Confirm the body contains actual transcript sentences — multiple speaker/timestamp lines — and not just the source pointer or `recording_url`.
 - Count the transcript lines in the saved note and confirm the number roughly matches the number of sentences (Fireflies) or speaker turns (Granola, Read.ai, Fathom, Otter) the MCP tool returned. A large shortfall means the body was truncated; go back to Step 2.
 - Check the length is plausible for the meeting's duration — a 60-minute call producing a few KB means a late start or cut-out — and that the first and last lines are real conversation, not truncation artifacts.
 - Confirm no speaker name appears in the body that was not in the source (Granola `Them` stays `Them` unless Step 2 settled it).
 - Confirm the transcript is un-summarized and the frontmatter is complete.
-- Report the saved file path, the line/sentence count, the proposed `area`, which source(s) supplied the body and whether they named speakers, the capture-completeness finding, and any missing metadata.
+- Report the saved file path, the line/sentence count, which source(s) supplied the body and whether they named speakers, the capture-completeness finding, and any missing metadata.
 
 ## Output
 
@@ -156,6 +138,5 @@ A dated Markdown note in `meeting-raw-transcripts/`, containing the full raw tra
 - [ ] Body is line-broken per sentence (Fireflies) or per speaker turn (Granola, Read.ai, Fathom, Otter), not one unbroken block.
 - [ ] No speaker attribution in the body that the source did not support; a Read.ai gap-fill span is labelled and its coverage stated.
 - [ ] Filename uses `YYYY-MM-DD` prefix and lower-case, hyphenated title.
-- [ ] Frontmatter includes `source`, `date`, `provider`, and `area`.
-- [ ] `area` is one of the defined areas (or `unfiled`), and the proposed classification was reported to the user.
+- [ ] Frontmatter includes `source`, `date`, and `provider`.
 - [ ] `meeting-raw-transcripts/` exists and the file is saved there.
