@@ -10,19 +10,19 @@ VTT = """WEBVTT
 
 1
 00:00:01.000 --> 00:00:04.000
-Jon: morning, let's start with the close
+Alex: morning, let's start with the close
 
 2
 00:00:04.500 --> 00:00:08.000
-Marie: AP is clean, AR has two stragglers
+Sam: AP is clean, AR has two stragglers
 """
 
 
 class TestParseCaptions:
     def test_cues_become_timestamped_rows(self, mti):
         assert mti.parse_captions(VTT) == [
-            "[00:00:01] Jon: morning, let's start with the close",
-            "[00:00:04] Marie: AP is clean, AR has two stragglers",
+            "[00:00:01] Alex: morning, let's start with the close",
+            "[00:00:04] Sam: AP is clean, AR has two stragglers",
         ]
 
     def test_srt_comma_milliseconds_are_handled(self, mti):
@@ -49,19 +49,19 @@ class TestParseJsonExport:
         rows, meta = mti.parse_json_export({
             "title": "Q3 close review",
             "date": "2026-08-30T15:00:00Z",
-            "participants": [{"name": "Jon"}, "Marie"],
+            "participants": [{"name": "Alex"}, "Sam"],
             "recording_url": "https://granola.example/abc",
             "transcript": [
-                {"speaker": "Jon", "start_time": "00:00:01", "text": "kick off"},
-                {"speaker": "Marie", "text": "AP is clean"},
+                {"speaker": "Alex", "start_time": "00:00:01", "text": "kick off"},
+                {"speaker": "Sam", "text": "AP is clean"},
                 {"text": ""},
             ],
         })
-        assert rows == ["[00:00:01] Jon: kick off", "Marie: AP is clean"]
+        assert rows == ["[00:00:01] Alex: kick off", "Sam: AP is clean"]
         assert meta == {
             "title": "Q3 close review",
             "date": "2026-08-30",
-            "participants": ["Jon", "Marie"],
+            "participants": ["Alex", "Sam"],
             "recording_url": "https://granola.example/abc",
         }
 
@@ -102,7 +102,7 @@ class TestInference:
         assert mti.guess_title("/tmp/x.md", None, "# Q3 Close Review\n\nbody") == "Q3 Close Review"
 
     def test_title_from_filename_without_date(self, mti):
-        assert mti.guess_title("/tmp/2026-08-30-jon-marie-sync.vtt") == "jon marie sync"
+        assert mti.guess_title("/tmp/2026-08-30-alex-sam-sync.vtt") == "alex sam sync"
 
     def test_slugify(self, mti):
         assert mti.slugify("Q3 Close Review — AP/AR!") == "q3-close-review-ap-ar"
@@ -119,7 +119,7 @@ class TestReadExport:
         f = tmp_path / "notes.md"
         f.write_text("# Sync\n\nJon: hello\n")
         rows, _ = mti.read_export(str(f))
-        assert rows == ["# Sync", "", "Jon: hello"]
+        assert rows == ["# Sync", "", "Alex: hello"]
 
     def test_empty_file_exits(self, mti, tmp_path):
         f = tmp_path / "empty.vtt"
@@ -137,20 +137,20 @@ class TestReadExport:
 class TestBuildNote:
     def test_frontmatter_and_body(self, mti):
         note = mti.build_note(
-            ["Jon: hello"],
+            ["Alex: hello"],
             title="Q3 close",
             date="2026-08-30",
             provider="Granola",
             source="Granola — /tmp/x.vtt",
-            participants=["Jon", "Marie"],
+            participants=["Alex", "Sam"],
             recording_url=None,
         )
         assert note.startswith("---\nsource: Granola — /tmp/x.vtt\n")
         assert "date: 2026-08-30" in note
-        assert "participants: [Jon, Marie]" in note
+        assert "participants: [Alex, Sam]" in note
         assert "recording_url: null" in note
         assert "type: meeting-transcript" in note
-        assert note.rstrip().endswith("Jon: hello")
+        assert note.rstrip().endswith("Alex: hello")
 
 
 class TestUniquePath:
@@ -182,7 +182,7 @@ class TestMain:
         assert summary["written_to"] == str(written)
         assert summary["provider"] == "Granola"
         assert summary["lines"] == 2
-        assert "Jon: morning" in written.read_text()
+        assert "Alex: morning" in written.read_text()
 
     def test_missing_destination_flags_exit(self, mti, tmp_path, monkeypatch):
         export = tmp_path / "x.vtt"
