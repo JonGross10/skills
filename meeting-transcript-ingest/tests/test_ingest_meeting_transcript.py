@@ -117,7 +117,7 @@ class TestReadExport:
 
     def test_markdown_kept_verbatim(self, mti, tmp_path):
         f = tmp_path / "notes.md"
-        f.write_text("# Sync\n\nJon: hello\n")
+        f.write_text("# Sync\n\nAlex: hello\n")
         rows, _ = mti.read_export(str(f))
         assert rows == ["# Sync", "", "Alex: hello"]
 
